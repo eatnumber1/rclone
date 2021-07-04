@@ -784,3 +784,23 @@ func (f *File) Truncate(size int64) (err error) {
 	}
 	return nil
 }
+
+func (f *File) Getxattr(name string) (value []byte, err error) {
+	flags := os.O_RDONLY
+	fh, err := f.Open(flags)
+	if err != nil {
+		return nil, err
+	}
+	defer fs.CheckClose(fh, &err)
+	return fh.Getxattr(name)
+}
+
+func (f *File) Listxattr(fill func(name string) bool) (err error) {
+	flags := os.O_RDONLY
+	fh, err := f.Open(flags)
+	if err != nil {
+		return err
+	}
+	defer fs.CheckClose(fh, &err)
+	return fh.Listxattr(fill)
+}

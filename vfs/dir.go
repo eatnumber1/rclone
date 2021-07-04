@@ -1067,3 +1067,11 @@ func (d *Dir) Fs() fs.Fs {
 func (d *Dir) Truncate(size int64) error {
 	return ENOSYS
 }
+
+func (d *Dir) Getxattr(name string) (value []byte, err error) {
+	return nil, ENOSYS
+}
+
+func (d *Dir) Listxattr(fill func(name string) bool) (err error) {
+	return ENOSYS
+}

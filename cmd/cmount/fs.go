@@ -550,7 +550,22 @@ func (fsys *FS) Setxattr(path string, name string, value []byte, flags int) (err
 
 // Getxattr gets extended attributes.
 func (fsys *FS) Getxattr(path string, name string) (errc int, value []byte) {
-	return -fuse.ENOSYS, nil
+	defer log.Trace(path, "name=%q", name)("errc=%d", &errc)
+
+	node, handle, errc := fsys.getNode(path, fhUnset)
+	if errc != 0 {
+		return errc, nil
+	}
+	var err error
+	if handle != nil {
+		value, err = handle.Getxattr(name)
+	} else {
+		value, err = node.Getxattr(name)
+	}
+	if err != nil {
+		return translateError(err), nil
+	}
+	return
 }
 
 // Removexattr removes extended attributes.
@@ -560,7 +575,22 @@ func (fsys *FS) Removexattr(path string, name string) (errc int) {
 
 // Listxattr lists extended attributes.
 func (fsys *FS) Listxattr(path string, fill func(name string) bool) (errc int) {
-	return -fuse.ENOSYS
+	defer log.Trace(path, "")("errc=%d", &errc)
+
+	node, handle, errc := fsys.getNode(path, fhUnset)
+	if errc != 0 {
+		return errc
+	}
+	var err error
+	if handle != nil {
+		err = handle.Listxattr(fill)
+	} else {
+		err = node.Listxattr(fill)
+	}
+	if err != nil {
+		return translateError(err)
+	}
+	return 0
 }
 
 // Translate errors from mountlib
