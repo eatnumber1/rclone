@@ -21,6 +21,8 @@ const (
 	EBADF
 	EROFS
 	ENOSYS
+	ENOATTR
+	ERANGE
 )
 
 // Errors which have exact counterparts in os

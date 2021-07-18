@@ -2,10 +2,8 @@ package vfs
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -496,33 +494,4 @@ func (fh *ReadFileHandle) Stat() (os.FileInfo, error) {
 	fh.mu.Lock()
 	defer fh.mu.Unlock()
 	return fh.file, nil
-}
-
-func (fh *ReadFileHandle) Getxattr(name string) (value []byte, err error) {
-	hashType := hash.None
-
-	parts := strings.Split(name, ".")
-	if len(parts) != 3 || parts[0] != "system" || parts[1] != "hash" {
-		return nil, ENODATA
-	}
-	err = hashType.Set(parts[2])
-	if err != nil {
-		return nil, ENODATA
-	}
-
-	o := fh.file.getObject()
-	hash, err := o.Hash(context.TODO(), hashType)
-	if err != nil {
-		return
-	}
-
-	return []byte(hash), nil
-}
-
-func (fh *ReadFileHandle) Listxattr(fill func(name string) bool) (err error) {
-	o := fh.file.getObject()
-	for _, hashType := range o.Fs().Hashes().Array() {
-		fill(fmt.Sprintf("system.hash.%s", hashType.String()))
-	}
-	return nil
 }

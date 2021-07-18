@@ -121,8 +121,6 @@ type Handle interface {
 	Release() error
 	Node() Node
 	//	Size() int64
-	Getxattr(name string) ([]byte, error)
-	Listxattr(fill func(name string) bool) error
 }
 
 // baseHandle implements all the missing methods
@@ -148,8 +146,6 @@ func (h baseHandle) WriteString(s string) (n int, err error)              { retu
 func (h baseHandle) Flush() (err error)                                   { return ENOSYS }
 func (h baseHandle) Release() (err error)                                 { return ENOSYS }
 func (h baseHandle) Node() Node                                           { return nil }
-func (h baseHandle) Getxattr(name string) (value []byte, err error)       { return nil, ENOSYS }
-func (h baseHandle) Listxattr(fill func(string) bool) (err error)         { return ENOSYS }
 
 //func (h baseHandle) Size() int64                                          { return 0 }
 

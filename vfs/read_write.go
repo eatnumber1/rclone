@@ -458,11 +458,3 @@ func (fh *RWFileHandle) Readdir(n int) ([]os.FileInfo, error) {
 func (fh *RWFileHandle) Readdirnames(n int) (names []string, err error) {
 	return nil, ENOSYS
 }
-
-func (fh *RWFileHandle) Getxattr(name string) (value []byte, err error) {
-	return nil, ENOSYS
-}
-
-func (fh *RWFileHandle) Listxattr(fill func(name string) bool) (err error) {
-	return ENOSYS
-}

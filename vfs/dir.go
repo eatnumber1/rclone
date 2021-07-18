@@ -1069,9 +1069,9 @@ func (d *Dir) Truncate(size int64) error {
 }
 
 func (d *Dir) Getxattr(name string) (value []byte, err error) {
-	return nil, ENOSYS
+	return nil, ENOATTR
 }
 
 func (d *Dir) Listxattr(fill func(name string) bool) (err error) {
-	return ENOSYS
+	return nil
 }

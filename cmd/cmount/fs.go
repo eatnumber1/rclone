@@ -552,16 +552,12 @@ func (fsys *FS) Setxattr(path string, name string, value []byte, flags int) (err
 func (fsys *FS) Getxattr(path string, name string) (errc int, value []byte) {
 	defer log.Trace(path, "name=%q", name)("errc=%d", &errc)
 
-	node, handle, errc := fsys.getNode(path, fhUnset)
+	node, errc := fsys.lookupNode(path)
 	if errc != 0 {
-		return errc, nil
+		return
 	}
-	var err error
-	if handle != nil {
-		value, err = handle.Getxattr(name)
-	} else {
-		value, err = node.Getxattr(name)
-	}
+
+	value, err := node.Getxattr(name)
 	if err != nil {
 		return translateError(err), nil
 	}
@@ -577,16 +573,12 @@ func (fsys *FS) Removexattr(path string, name string) (errc int) {
 func (fsys *FS) Listxattr(path string, fill func(name string) bool) (errc int) {
 	defer log.Trace(path, "")("errc=%d", &errc)
 
-	node, handle, errc := fsys.getNode(path, fhUnset)
+	node, errc := fsys.lookupNode(path)
 	if errc != 0 {
 		return errc
 	}
-	var err error
-	if handle != nil {
-		err = handle.Listxattr(fill)
-	} else {
-		err = node.Listxattr(fill)
-	}
+
+	err := node.Listxattr(fill)
 	if err != nil {
 		return translateError(err)
 	}
@@ -621,6 +613,10 @@ func translateError(err error) (errc int) {
 		return -fuse.ENOSYS
 	case vfs.EINVAL:
 		return -fuse.EINVAL
+	case vfs.ENOATTR:
+		return -fuse.ENOATTR
+	case vfs.ERANGE:
+		return -fuse.ERANGE
 	}
 	fs.Errorf(nil, "IO error: %v", err)
 	return -fuse.EIO
