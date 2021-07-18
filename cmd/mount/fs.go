@@ -99,6 +99,10 @@ func translateError(err error) error {
 		return fuse.ENOSYS
 	case vfs.EINVAL:
 		return fuse.Errno(syscall.EINVAL)
+	case vfs.ENOATTR:
+		return fuse.Errno(syscall.ENOATTR)
+	case vfs.ERANGE:
+		return fuse.Errno(syscall.ERANGE)
 	}
 	return err
 }
